@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <meta http-equiv="refresh" content="2">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="{% static 'css/styles.min.css' %}" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+  <style>
+.dot1 {
+  height: 25px;
+  width: 25px;
+  background-color: #eb5b5b;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot2 {
+  height: 25px;
+  width: 25px;
+  background-color: #5beb65;
+  border-radius: 50%;
+  display: inline-block;
+}
+</style>
+</head>
+
+<body>
+  <!--  Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed"
+    <!--  Main wrapper -->
+    <div class="body-wrapper">
+      <!--  Header Start -->
+      <header class="app-header">
+        <nav class="navbar navbar-expand-lg navbar-light">
+          <ul class="navbar-nav">
+            <li class="nav-item d-block d-xl-none">
+              <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
+                <i class="ti ti-menu-2"></i>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link nav-icon-hover" href="javascript:void(0)">
+                <p class="mb-0 fs-3">Faegan Lemuel Davlyson - IEE - 202000264</p>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </header>
+      <!--  Header End -->
+      <div class="container-fluid">
+        <!--  Row 1 -->
+        <div class="row">
+          <div class="col-lg-8 d-flex align-items-strech">
+            <div class="card w-100">
+              <div class="card-body">
+                <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
+                  <div class="mb-3 mb-sm-0">
+                    <h5 class="card-title fw-semibold">Restaurant Sales Overview</h5>
+                  </div>
+                </div>
+                <canvas id="myChart"></canvas>
+<script>
+{% with a=jual_makanan b=jual_minuman c=jual_service %}
+var xValues = ["Makanan", "Minuman", "Service"];
+var yValues = [{{a}}, {{b}}, {{c}}];
+var barColors = ["red", "green","blue"];
+
+new Chart("myChart", {
+  type: "bar",
+  data: {
+    labels: xValues,
+    datasets: [{
+      backgroundColor: barColors,
+      data: yValues
+    }]
+  },
+  options: {
+    legend: {display: false},
+  }
+});
+{% endwith %}
+</script>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="row">
+              <div class="col-lg-12">
+                <!-- Yearly Breakup -->
+                <div class="card overflow-hidden">
+                  <div class="card-body p-4">
+                    <h5 class="card-title mb-9 fw-semibold">Plantation Earnings</h5>
+                    <div class="row align-items-center">
+                      <div class="col-8">
+                        <h4 class="fw-semibold mb-3" id="p1">Rp</h4>
+                        {% with c=beras_harga d=sayur_harga e=buah_harga %}
+                        <script>
+                        var total= Math.abs(Number({{c}}))+Math.abs(Number({{d}}))/100+Math.abs(Number({{e}}))
+                          document.getElementById("p1").innerHTML = "Rp "+Math.floor(total);
+                        </script>
+                        {% endwith %}
+                      </div>
+                      <div class="col-12">
+                        <div class="d-flex justify-content-center">
+                          <canvas id="donut" style="width:100%;max-width:200px"></canvas>
+                        {% with a=wagyu_harga b=ikan_harga c=beras_harga d=sayur_harga e=buah_harga f=jual_harga %}
+<script>
+var xValues = ["Beras", "Sayur", "Buah"];
+var yValues = [Math.floor(Math.abs(Number({{c}}))), Math.floor(Math.abs(Number({{d}})))/100, Math.floor(Math.abs(Number({{e}})))];
+var barColors = [
+  "#b91d47",
+  "#e8c3b9",
+  "#5dcfc1",
+];
+
+new Chart("donut", {
+  type: "doughnut",
+  data: {
+    labels: xValues,
+    datasets: [{
+      backgroundColor: barColors,
+      data: yValues
+    }]
+  },
+  options: {
+      legend: {display: false},
+  }
+});
+</script>
+                          {% endwith %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-12">
+                <!-- Monthly Earnings -->
+                <div class="card">
+                  <div class="card-body">
+                    <div class="row alig n-items-start">
+                      <div class="col-8">
+                        <h4 class="fw-semibold mb-3">Farm Earnings</h4>
+                        <div class="d-flex align-items-center pb-1">
+                          <span
+                            class="me-2 rounded-circle bg-light-danger round-20 d-flex align-items-center justify-content-center">
+                          </span>
+                          <p class="fs-3 mb-0" id="farm_earn">Rp</p>
+                          {% with c=wagyu_harga d=ikan_harga %}
+                        <script>
+                        var total= Math.abs(Number({{c}}))+Math.abs(Number({{d}}))
+                          document.getElementById("farm_earn").innerHTML = "Rp "+Math.floor(total);
+                        </script>
+                        {% endwith %}
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="d-flex justify-content-end">
+                          <div
+                            class="text-white bg-secondary rounded-circle p-6 d-flex align-items-center justify-content-center">
+                            <i class="ti ti-currency-dollar fs-6"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                    <div style="text-align:center">
+                      <h5>Farm Condition</h5>
+                      {% with a=kondisi_farm %}
+                      {% if a == "0" %}
+                        <span class="dot1"></span>
+                      {% else %}
+                        <span class="dot2"></span>
+                      {% endif %}
+                      {% endwith %}
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-4 d-flex align-items-stretch">
+            <div class="card w-100">
+              <div class="card-body p-4">
+                <div class="mb-4">
+                  <h5 class="card-title fw-semibold">Restaurant Condition</h5>
+                </div>
+                <ul class="timeline-widget mb-0 position-relative mb-n5">
+                  <li class="timeline-item d-flex position-relative overflow-hidden">
+                    <div class="timeline-time text-dark flex-shrink-0 text-end">Angin</div>
+                    <div class="timeline-badge-wrap d-flex flex-column align-items-center">
+                      <span class="timeline-badge border-2 border border-primary flex-shrink-0 my-8"></span>
+                      <span class="timeline-badge-border d-block flex-shrink-0"></span>
+                    </div>
+                    {% with a=musim_angin %}
+                    <div class="timeline-desc fs-3 text-dark mt-n1">{{a}} Km/h</div>
+                    {% endwith %}
+                  </li>
+                  <li class="timeline-item d-flex position-relative overflow-hidden">
+                    <div class="timeline-time text-dark flex-shrink-0 text-end">Suhu</div>
+                    <div class="timeline-badge-wrap d-flex flex-column align-items-center">
+                      <span class="timeline-badge border-2 border border-info flex-shrink-0 my-8"></span>
+                      <span class="timeline-badge-border d-block flex-shrink-0"></span>
+                    </div>
+                    {% with a=musim_suhu %}
+                    <div class="timeline-desc fs-3 text-dark mt-n1">{{a}} Degree Celcius</div>
+                    {% endwith %}
+                  </li>
+                  <li class="timeline-item d-flex position-relative overflow-hidden">
+                    <div class="timeline-time text-dark flex-shrink-0 text-end">Kelembaban</div>
+                    <div class="timeline-badge-wrap d-flex flex-column align-items-center">
+                      <span class="timeline-badge border-2 border border-success flex-shrink-0 my-8"></span>
+                      <span class="timeline-badge-border d-block flex-shrink-0"></span>
+                    </div>
+                    {% with a=musim_kelembaban %}
+                    <div class="timeline-desc fs-3 text-dark mt-n1">{{a}}%</div>
+                    {% endwith %}
+                  </li>
+                  <li class="timeline-item d-flex position-relative overflow-hidden">
+                    <div class="timeline-time text-dark flex-shrink-0 text-end">Musim</div>
+                    <div class="timeline-badge-wrap d-flex flex-column align-items-center">
+                      <span class="timeline-badge border-2 border border-success flex-shrink-0 my-8"></span>
+                      <span class="timeline-badge-border d-block flex-shrink-0"></span>
+                    </div>
+                    {% with a=musim_musim %}
+                    <div class="timeline-desc fs-3 text-dark mt-n1">
+                      <p id="musim"></p>
+                    </div>
+                    <script>
+                      const nama_musim = ["", "Panas", "Semi", "Gugur", "Dingin"];
+                      document.getElementById("musim").innerHTML = nama_musim[Number({{a}})].toString();
+                    </script>
+                    {% endwith %}
+                  </li>
+                  <li class="timeline-item d-flex position-relative overflow-hidden">
+                    <div class="timeline-time text-dark flex-shrink-0 text-end">Jumlah Customer</div>
+                    <div class="timeline-badge-wrap d-flex flex-column align-items-center">
+                      <span class="timeline-badge border-2 border border-warning flex-shrink-0 my-8"></span>
+                      <span class="timeline-badge-border d-block flex-shrink-0"></span>
+                    </div>
+                    {% with a=pengunjung_jumlah %}
+                    <div class="timeline-desc fs-3 text-dark mt-n1">{{a}} People/day</div>
+                    {% endwith %}
+                  </li>
+                  <li class="timeline-item d-flex position-relative overflow-hidden">
+                    <div class="timeline-time text-dark flex-shrink-0 text-end">Kepuasan Customer</div>
+                    <div class="timeline-badge-wrap d-flex flex-column align-items-center">
+                      <span class="timeline-badge border-2 border border-danger flex-shrink-0 my-8"></span>
+                      <span class="timeline-badge-border d-block flex-shrink-0"></span>
+                    </div>
+                    {% with a=pengunjung_kepuasan %}
+                    <div class="timeline-desc fs-3 text-dark mt-n1">
+                      <p id="jumlah_customer"></p>
+                    </div>
+                    <script>
+                      const kepuasan = ["", "Tidak Puas", "Kurang Puas", "Standar", "Puas", "Sangat Puas"];
+                      document.getElementById("jumlah_customer").innerHTML = kepuasan[Number({{a}})].toString();
+                    </script>
+                    {% endwith %}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-12 d-flex align-items-stretch">
+            <div class="card w-100">
+              <div class="card-body p-4">
+                <h5 class="card-title fw-semibold mb-4">Farm Monitor</h5>
+                <div class="table-responsive">
+                  <table class="table text-nowrap mb-0 align-middle">
+                    <thead class="text-dark fs-4">
+                      <tr>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Sensor</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Value</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Sensor</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Value</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Sensor</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Value</h6>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Temperatur kandang</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=kandang_temperatur %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">Degree Celcius</span>
+                          {% endwith %}
+                        </td>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Berat Wagyu</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=wagyu_berat %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">Grams</span>
+                          {% endwith %}
+                        </td>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Berat Ikan</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=ikan_berat %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">Grams</span>
+                          {% endwith %}
+                        </td>
+                      </tr> 
+                      <tr>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Kelembaban kandang</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=kandang_kelembaban %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">Percent (%)</span>
+                          {% endwith %}
+                        </td>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Kualitas Wagyu</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=wagyu_kualitas %}
+                            <h6 class="fw-semibold mb-1">A{{a}}</h6>
+                            <span class="fw-normal">Class Grade</span>
+                          {% endwith %}
+                        </td>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Lemak Ikan</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=ikan_lemak %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">Percent (%)</span>
+                          {% endwith %}
+                        </td>
+                      </tr>
+                    <tr>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Pakan Hewan</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=kandang_pakan %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">Grams</span>
+                          {% endwith %}
+                        </td>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Lemak Wagyu</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=wagyu_lemak %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">Percent (%)</span>
+                          {% endwith %}
+                        </td>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Panjang Ikan</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=ikan_panjang %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">Centimeter</span>
+                          {% endwith %}
+                        </td>
+                      </tr>
+                    <tr>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Kondisi Kandang</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=kandang_kondisi %}
+                            <h6 class="fw-semibold mb-1" id="kondisi_kandang">{{a}}</h6>
+                          <script>
+                            const kondisi = ["Bad", "Good", "Kurang Puas", "Standar", "Puas", "Sangat Puas"];
+                            document.getElementById("kondisi_kandang").innerHTML = kondisi[Number({{a}})].toString();
+                          </script>
+                            <span class="fw-normal">Status</span>
+                          {% endwith %}
+                        </td>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Harga Wagyu</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=wagyu_harga %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">Rupiah (Rp)</span>
+                          {% endwith %}
+                        </td>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Harga Ikan</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=ikan_harga %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">Rupiah (Rp)</span>
+                          {% endwith %}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-12 d-flex align-items-stretch">
+            <div class="card w-100">
+              <div class="card-body p-4">
+                <h5 class="card-title fw-semibold mb-4">Plantation Monitor</h5>
+                <div class="table-responsive">
+                  <table class="table text-nowrap mb-0 align-middle">
+                    <thead class="text-dark fs-4">
+                      <tr>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Sensor</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Value</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Sensor</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Value</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Sensor</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0">Value</h6>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Berat beras</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=beras_berat %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">Grams</span>
+                          {% endwith %}
+                        </td>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Berat sayur</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=sayur_berat %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">Grams</span>
+                          {% endwith %}
+                        </td>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Berat buah</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=buah_berat %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">Grams</span>
+                          {% endwith %}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Aroma Beras</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=beras_aroma %}
+                            <h6 class="fw-semibold mb-1" id="aroma">{{a}}</h6>
+                            <span class="fw-normal">(1-10) Quality</span>
+                          {% endwith %}
+                        </td>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Warna sayur</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=sayur_warna %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">(1-10) Quality</span>
+                          {% endwith %}
+                        </td>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Warna buah</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=buah_warna %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">(1-10) Quality</span>
+                          {% endwith %}
+                        </td>
+                      </tr>
+                    <tr>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Air beras</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=beras_air %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">Percent (%)</span>
+                          {% endwith %}
+                        </td>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Ph sayur</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=sayur_keasaman %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">Ph</span>
+                          {% endwith %}
+                        </td>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Ph buah</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=buah_keasaman %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">Ph</span>
+                          {% endwith %}
+                        </td>
+                      </tr>
+                    <tr>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Harga beras</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=beras_harga %}
+                            <h6 class="fw-semibold mb-1" id="kondisi_kandang">{{a}}</h6>
+                            <span class="fw-normal">Rupiah (Rp)</span>
+                          {% endwith %}
+                        </td>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Harga sayur</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=sayur_harga %}
+                            <h6 class="fw-semibold mb-1">{{a}}</h6>
+                            <span class="fw-normal">Rupiah (Rp)</span>
+                          {% endwith %}
+                        </td>
+                        <td class="border-bottom-0"><h6 class="fw-semibold mb-0">Harga buah</h6></td>
+                        <td class="border-bottom-0">
+                          {% with a=buah_harga %}
+                            <h6 class="fw-semibold mb-1" id="harga_buah">{{a}}</h6>
+                            <span class="fw-normal">Rupiah (Rp)</span>
+                          <script>
+                            document.getElementById("harga_buah").innerHTML = Math.abs(Number({{a}})).toString();
+                          </script>
+                          {% endwith %}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="{% static 'libs/jquery/dist/jquery.min.js' %}/"></script>
+  <script src="{% static 'libs/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'js/sidebarmenu.js' %}"></script>
+  <script src="{% static 'js/app.min.js' %}"></script>
+  <script src="{% static 'libs/apexcharts/dist/apexcharts.min.js' %}"></script>
+  <script src="{% static 'libs/simplebar/dist/simplebar.js' %}"></script>
+  <script src="{% static 'js/dashboard.js' %}"></script>
+</body>
+
+</html>
